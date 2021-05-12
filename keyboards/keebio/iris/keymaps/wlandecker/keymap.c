@@ -61,7 +61,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_FUN] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     KC_ESC,  _______, KC_MPRV, KC_MPLY, KC_MNXT, KC_VOLU,                            KC_BRIU, _______, _______, _______, _______, KC_EQL,
+     KC_ESC,  _______, KC_MPRV, KC_MPLY, KC_MNXT, KC_VOLU,                            KC_BRIU, _______, _______, _______, _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, _______, KC_UP,   _______, KC_VOLD,                            KC_BRID, _______, KC_UP,   _______, _______, KC_BSLS,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
@@ -82,15 +82,19 @@ void keyboard_post_init_user(void) {
 }
 
 void update_hsv(enum hsv_enum my_hsv, enum direction my_direction) {
+  /**
+  Update the hue, saturation, value of the keyboard when in _FUN layer.
+  Store the change in EEPROM so that it persists across restarts.
+  **/
 
-  // First, get.
+  // First, get current HSV config from EEPROM.
   user_config.raw = eeconfig_read_user();
   int8_t sign = 1;
   if (my_direction == DECR) {
     sign = -1;
   }
 
-  // Next, update.
+  // Next, update the HSV config.
   switch (my_hsv) {
     case HUE:
       user_config.hue = user_config.hue + sign * RGBLIGHT_HUE_STEP;
@@ -103,15 +107,17 @@ void update_hsv(enum hsv_enum my_hsv, enum direction my_direction) {
       break;
   }
   
-  // Next, set.
+  // Next, set the HSV of the keyboard.
   user_config.hsv_change = true;
   rgblight_sethsv_noeeprom(user_config.hue, user_config.sat, user_config.val);
 
-  // Finally, store.
+  // Finally, store the config in EEPROM.
   eeconfig_update_user(user_config.raw); 
-  // uprintf("Set EEPROM to H=%u, S=%u, V=%u \n", user_config.hue, user_config.sat, user_config.val);
 }
 
+/**
+Some helper functions to increment and decrement H, S, and V.
+**/
 void increase_hue(void) { update_hsv(HUE, INCR); }
 void decrease_hue(void) { update_hsv(HUE, DECR); }
 void increase_sat(void) { update_hsv(SAT, INCR); }
