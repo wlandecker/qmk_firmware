@@ -22,6 +22,7 @@ enum custom_keycodes {
 #define OS_OPT  OS_LALT
 #define OS_SFT  OS_LSFT
 #define OS_CTL  OS_LCTL
+#define CMD(kc) LGUI(kc)
 
 // App switch
 #define APP_SWITCH_TIMEOUT 1000
@@ -72,9 +73,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
 
     [_MODS] = LAYOUT_split_3x5_2(
-        CLEAR_OS, KC_NO,  KC_NO,   KC_NO,   KC_NO,       KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
-	    OS_CTL,  KC_NO,   OS_OPT,  OS_CMD,  QK_AREP,     QK_REP,  OS_CMD,  OS_OPT,  KC_NO,   OS_CTL,
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,       KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+        CLEAR_OS,  CMD(KC_W),     KC_NO,     KC_NO,   KC_NO,      KC_NO,   KC_NO,   KC_NO,  KC_NO,   KC_NO,
+	    OS_CTL,        KC_NO,    OS_OPT,    OS_CMD, QK_AREP,     QK_REP,  OS_CMD,  OS_OPT,  KC_NO,   OS_CTL,
+        CMD(KC_Z), CMD(KC_X), CMD(KC_C), CMD(KC_V),   KC_NO,      KC_NO,   KC_NO,   KC_NO,  KC_NO,   KC_NO,
 
                           _______, _______,              _______, _______
     ),
