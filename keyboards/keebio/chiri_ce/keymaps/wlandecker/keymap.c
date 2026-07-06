@@ -4,26 +4,81 @@
 # include "keymap.h"
 #endif
 
+#define CTL_BSP MT(MOD_LCTL, KC_BSPC)
+
+#define CMD_NAV LGUI_T(KC_NO)
+#define OPT_SYM LALT_T(KC_NO)
+
+enum layers {
+    _BASE = 0,
+    _NAV,
+    _SYM
+};
+
+static void move_between_base_and(uint8_t target_layer) {
+    if (get_highest_layer(layer_state) == target_layer) {
+        layer_move(_BASE);
+    } else {
+        layer_move(target_layer);
+    }
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case CMD_NAV:
+            if (record->tap.count) {
+                if (record->event.pressed) {
+                    move_between_base_and(_NAV);
+                }
+                return false;  // Don't let KC_NO get processed.
+            }
+            return true;       // Hold behavior: normal LGUI mod-tap.
+
+        case OPT_SYM:
+            if (record->tap.count) {
+                if (record->event.pressed) {
+                    move_between_base_and(_SYM);
+                }
+                return false;  // Don't let KC_NO get processed.
+            }
+            return true;       // Hold behavior: normal LALT mod-tap.
+    }
+
+    return true;
+}
+
+bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case CMD_NAV:
+        case OPT_SYM:
+            return true;
+    }
+    return false;
+}
+
 /* Reconfigured specifically for the 3x5 layout variant */
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+      /* BASE layer */
       [0] = LAYOUT(
-        KC_TAB,  KC_Q, KC_W, KC_E, KC_R, KC_T,                  KC_Y, KC_U, KC_I,    KC_O,   KC_P,    KC_DEL, 
-        KC_LCTL, KC_A, KC_S, KC_D, KC_F, KC_G,                  KC_H, KC_J, KC_K,    KC_L,   KC_SCLN, KC_QUOT, 
-        KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B,  TT(1), TT(2),   KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT, 
-                MT(MOD_LCTL,KC_BSPC), KC_LGUI, KC_SPC, KC_RSFT, KC_RALT, KC_ENT
+        KC_NO,  KC_Q,   KC_W,   KC_E,   KC_R,    KC_T,                            KC_Y,    KC_U,  KC_I,    KC_O,   KC_P,    KC_NO, 
+        KC_NO,  KC_A,   KC_S,   KC_D,   KC_F,    KC_G,                            KC_H,    KC_J,  KC_K,    KC_L,   KC_SCLN, KC_NO, 
+        KC_NO,  KC_Z,   KC_X,   KC_C,   KC_V,    KC_B,    TO(0),         TO(0),   KC_N,    KC_M,  KC_COMM, KC_DOT, KC_SLSH, KC_NO, 
+                                        CTL_BSP, CMD_NAV, KC_SPC,        KC_RSFT, OPT_SYM, KC_ENT
                 ),
       
+      /* NAV layer */
       [1] = LAYOUT(
-        KC_GRV,  KC_ESC,  KC_TRNS, RM_VALU, KC_BRIU, KC_VOLU,                     KC_PGUP, KC_TRNS, KC_UP,   KC_TRNS, KC_HOME, KC_BSPC, 
-        KC_ESC,  KC_TAB,  KC_TRNS, RM_VALD, KC_BRID, KC_VOLD,                     KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_END,  S(KC_BSLS), 
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, 
-                                             KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
-      
+        _______, KC_ESC, KC_NO, RM_VALU, KC_BRIU, KC_VOLU,                       KC_PGUP, KC_NO,   KC_UP,   KC_NO,   KC_HOME, _______, 
+        _______, KC_TAB, KC_NO, RM_VALD, KC_BRID, KC_VOLD,                       KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_END,  _______, 
+        _______, KC_NO,  KC_NO, KC_NO,   KC_NO,   KC_NO,   _______,     _______, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   _______, 
+                                         _______, _______, _______,     _______, _______, _______),
+    
+      /* SYM/NUM layer */
       [2] = LAYOUT(
-        KC_TRNS, KC_1,    KC_2,    KC_3,    KC_4,       KC_5,                             KC_6,     KC_7,      KC_8,   KC_9,    KC_0,    KC_TRNS, 
-        KC_TRNS, KC_GRV,  KC_TRNS, KC_MINS, S(KC_COMM), KC_LBRC,                          KC_RBRC,  S(KC_DOT), KC_EQL, KC_BSLS, KC_QUOT, KC_BSLS, 
-        KC_MUTE, KC_MINS, KC_TRNS, KC_TRNS, KC_TRNS,    S(KC_COMM),   KC_TRNS, KC_TRNS,   S(KC_DOT), KC_TRNS, KC_TRNS, KC_TRNS, KC_EQL,  KC_TRNS, 
-                                                    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
+        _______, KC_1,    KC_2,  KC_3,    KC_4,    KC_5,                          KC_6,     KC_7,    KC_8,    KC_9,    KC_0,    _______, 
+        _______, KC_GRV,  KC_NO, KC_MINS, KC_LABK, KC_LBRC,                       KC_RBRC,  KC_RABK, KC_EQL,  KC_BSLS, KC_QUOT, _______, 
+        _______, KC_MINS, KC_NO, KC_NO,   KC_NO,   KC_RABK, _______,     _______, KC_RABK,  KC_NO,   KC_NO,   KC_NO,   KC_EQL,  _______, 
+                                          _______, _______, _______,     _______, _______, _______),
 
 };
 
