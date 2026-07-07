@@ -5,6 +5,7 @@
 #endif
 
 #define CTL_BSP MT(MOD_LCTL, KC_BSPC)
+#define SFT_SPC MT(MOD_LSFT, KC_SPC)
 
 #define CMD_NAV LGUI_T(KC_NO)
 #define OPT_SYM LALT_T(KC_NO)
@@ -183,7 +184,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, KC_ESC, KC_NO, RM_VALU, KC_BRIU, KC_VOLU,                       KC_PGUP, KC_NO,   KC_UP,   KC_NO,   KC_HOME, _______, 
         _______, KC_TAB, KC_NO, RM_VALD, KC_BRID, KC_VOLD,                       KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_END,  _______, 
         _______, KC_NO,  KC_NO, KC_NO,   KC_NO,   KC_NO,   _______,     _______, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   _______, 
-                                         _______, _______, _______,     _______, _______, _______),
+                                         _______, _______, SFT_SPC,     _______, _______, _______),
     
       /* SYM/NUM layer */
       [2] = LAYOUT(
