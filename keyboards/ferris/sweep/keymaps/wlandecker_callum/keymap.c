@@ -43,12 +43,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * ,-----------------------------.                  ,-----------------------------.
      * |  Q  |  W  |  E  |  R  |  T  |                  |  Y  |  U  |  I  |  O  |  P  |
      * |-----+-----+-----+-----+-----|                  |-----+-----+-----+-----+-----|
-     * |  A  |  S  |  D  |  F  |  G  |                  |  H  |  J  |  K  |  L  |  ;  |
+     * |  A  |  S  |  D  |  F  |  G  |                  |  H  |  J  |  K  |  L  |  '  |
      * |-----+-----+-----+-----+-----|                  |-----+-----+-----+-----+-----|
      * |  Z  |  X  |  C  |  V  |  B  |                  |  N  |  M  |  ,  |  .  |  /  |
      * `-----------------------------'___          _____`-----------------------------'
      *                  | bsps/nav | spc |        | shft | ent/sym |
      *                  `----------------'        `----------------'
+     *
+     * Note that the far right homerow key is a quote instead of the usual semicolon.
+     * Semicolon was moved to the _SYM layer.
      */
 
     [_BASE] = LAYOUT_split_3x5_2(
@@ -100,6 +103,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *   QK_AREP = alternate repeat, e.g. Right -> Left, Down -> Up
      *
      * CLEAR_OS clears stuck/mistaken one-shot mods.
+     *
+     * WIN_SW switches windows (command-` on Mac)
+     * APP_SW switches apps (command-tab on Mac)
      */
 
     [_MODS] = LAYOUT_split_3x5_2(
