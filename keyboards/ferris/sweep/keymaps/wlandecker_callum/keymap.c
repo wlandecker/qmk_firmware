@@ -1,21 +1,25 @@
 #include QMK_KEYBOARD_H
 
 enum layers {
-    _BASE,
-    _MODS,
+    _BASE = 0,
     _NAV,
     _SYM,
+    _MODS
 };
 
 enum custom_keycodes {
     CLEAR_OS = SAFE_RANGE,
-    APP_SW,
+    APP_SW
 };
 
-// Thumb key: tap = Backspace, hold = _MODS layer
-#define MOD_BSPC LT(_MODS, KC_BSPC)
-#define NAV_SPC LT(_NAV, KC_SPC)
+#define NAV_BSP LT(_NAV, KC_BSPC)
 #define SYM_ENT LT(_SYM, KC_ENT)
+#define WIN_SW LGUI(KC_GRV)
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    // tri-layer: when both the NAV and SYM layer keys are activated, go to MODS layer instead.
+    return update_tri_layer_state(state, _NAV, _SYM, _MODS);
+}
 
 // Optional aliases to make the keymap easier to read
 #define OS_CMD  OS_LGUI
@@ -23,6 +27,7 @@ enum custom_keycodes {
 #define OS_SFT  OS_LSFT
 #define OS_CTL  OS_LCTL
 #define CMD(kc) LGUI(kc)
+#define CMDOPT(key) (QK_LGUI | QK_LALT | (key))
 
 // App switch
 #define APP_SWITCH_TIMEOUT 1000
@@ -41,17 +46,42 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * |  A  |  S  |  D  |  F  |  G  |                  |  H  |  J  |  K  |  L  |  ;  |
      * |-----+-----+-----+-----+-----|                  |-----+-----+-----+-----+-----|
      * |  Z  |  X  |  C  |  V  |  B  |                  |  N  |  M  |  ,  |  .  |  /  |
-     * `-----------------------------'                  `-----------------------------'
-     *               | mod/bsps | nav/spc |        | shft | sym/ent |
-     *               `--------------------'        `----------------'
+     * `-----------------------------'___          _____`-----------------------------'
+     *                  | bsps/nav | spc |        | shft | ent/sym |
+     *                  `----------------'        `----------------'
      */
 
     [_BASE] = LAYOUT_split_3x5_2(
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,        KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
-        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,        KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,
+        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,        KC_H,    KC_J,    KC_K,    KC_L,    KC_QUOTE,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,        KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
 
-                          MOD_BSPC, NAV_SPC,              KC_RSFT,  SYM_ENT
+                          NAV_BSP, KC_SPC,              KC_RSFT,  SYM_ENT
+    ),
+
+    /*
+     * _NAV layer
+     */
+
+    [_NAV] = LAYOUT_split_3x5_2(
+        KC_ESC,  CMDOPT(KC_Q), CMDOPT(KC_T), CMDOPT(KC_P),     KC_VOLU,         KC_PGUP,   KC_NO,   KC_UP,   KC_NO,    KC_HOME,
+        KC_TAB,  CMDOPT(KC_A), CMDOPT(KC_G), CMDOPT(KC_QUOTE), KC_VOLD,         KC_PGDN,   KC_LEFT, KC_DOWN, KC_RIGHT, KC_END,
+        KC_NO,   CMDOPT(KC_Z), CMDOPT(KC_B), CMDOPT(KC_SLSH),  KC_NO,           KC_NO,     KC_NO,   KC_NO,   KC_NO,    KC_NO,
+
+                                                    _______, _______,              _______, _______
+    ),
+
+    /*
+     * _SYM layer.
+     * Left outer thumb becomes shift to enable shift-symbols
+     */
+
+    [_SYM] = LAYOUT_split_3x5_2(
+        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,           KC_6,    KC_7,    KC_8,     KC_9,    KC_0,
+        KC_TILD, KC_NO,   KC_MINS, KC_LABK, KC_LBRC,        KC_RBRC, KC_RABK, KC_EQUAL, KC_BSLS, KC_SCLN,
+        KC_MINS, KC_NO,   KC_NO,   KC_NO,   KC_NO,          KC_NO,   KC_NO,   KC_NO,    KC_NO,   KC_EQUAL,
+
+                                    _______, KC_LSFT,       _______, _______
     ),
 
     /*
@@ -73,38 +103,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
 
     [_MODS] = LAYOUT_split_3x5_2(
-        CLEAR_OS,  CMD(KC_W),     KC_NO,     KC_NO,   KC_NO,      KC_NO,   KC_NO,   KC_NO,  KC_NO,   KC_NO,
-	    OS_CTL,        KC_NO,    OS_OPT,    OS_CMD, QK_AREP,     QK_REP,  OS_CMD,  OS_OPT,  KC_NO,   OS_CTL,
-        CMD(KC_Z), CMD(KC_X), CMD(KC_C), CMD(KC_V),   KC_NO,      KC_NO,   KC_NO,   KC_NO,  KC_NO,   KC_NO,
+        CLEAR_OS,  CMD(KC_W), WIN_SW,    APP_SW,    KC_NO,          KC_NO,     KC_NO,   KC_NO,  KC_NO,   KC_NO,
+	    OS_CTL,    KC_NO,     OS_OPT,    OS_CMD,    QK_AREP,        QK_REP,    OS_CMD,  OS_OPT, KC_NO,   OS_CTL,
+        CMD(KC_Z), CMD(KC_X), CMD(KC_C), CMD(KC_V), KC_NO,          CMD(KC_N), KC_NO,   KC_NO,  KC_NO,   KC_NO,
 
-                          _______, _______,              _______, _______
+                                        _______, _______,           _______, _______
     ),
-
     /*
-     * _NAV layer stub.
-     * Fill this however you already planned.
+     * TODO: command-option shortcuts for window resizing. 
      */
-
-    [_NAV] = LAYOUT_split_3x5_2(
-        KC_ESC,  KC_NO,   KC_NO,   KC_NO,   KC_VOLU,     KC_PGUP,   KC_NO,   KC_UP,   KC_NO,    KC_HOME,
-        KC_TAB,  KC_NO,   KC_NO,   APP_SW,  KC_VOLD,     KC_PGDN,   KC_LEFT, KC_DOWN, KC_RIGHT, KC_END,
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,       KC_NO,     KC_NO,   KC_NO,   KC_NO,    KC_NO,
-
-                          _______, _______,              _______, _______
-    ),
-
-    /*
-     * _SYM layer stub.
-     * Left outer thumb becomes shift to enable shift-symbols
-     */
-
-    [_SYM] = LAYOUT_split_3x5_2(
-        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,        KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
-        KC_TILD, KC_NO,   KC_MINS, KC_NO,   KC_LBRC,     KC_RBRC, KC_NO,   KC_EQUAL,KC_BSLS, KC_QUOTE,
-        KC_MINS, KC_NO,   KC_NO,   KC_NO,   KC_LABK,     KC_RABK, KC_NO,   KC_NO,   KC_NO,   KC_EQUAL,
-
-                          _______, KC_LSFT,              _______, _______
-    ),
 };
 
 // Shift + Volume Up -> Brightness Up
