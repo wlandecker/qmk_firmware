@@ -198,10 +198,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
       /* MACROCUTS layer */
       [3] = LAYOUT(
-        _______, KC_NO,   KC_NO, KC_NO,   KC_NO,   KC_NO,                         KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO, _______, 
-        _______, KC_NO,   KC_NO, KC_NO,   WIN_SW,  APP_SW,                        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO, _______, 
-        _______, KC_NO,   KC_NO, KC_NO,   KC_NO,   KC_NO,   _______,     _______, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO, _______, 
-                                          _______, _______, _______,     _______, _______, _______),
+        _______, KC_NO, KC_NO, KC_NO, KC_NO,  KC_NO,                       KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, _______, 
+        _______, KC_NO, KC_NO, KC_NO, WIN_SW, APP_SW,                      KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, _______, 
+        _______, KC_NO, KC_NO, KC_NO, KC_NO,  KC_NO, _______,     _______, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, _______, 
+                                   _______, _______, _______,     _______, _______, _______),
 
 };
 
